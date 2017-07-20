@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+def color_swap(image):
+    return tf.reverse(image, axis=[-1])
 
 def visualize_input(boxes, image, masks):
     image_sum_sample = image[:1]
@@ -19,21 +21,24 @@ def visualize_masks(masks, name):
 
 
 def visualize_bb(image, boxes, name):
+
     image_sum_sample_shape = tf.shape(image)[1:]
     gt_x_min = boxes[:, 0] / tf.cast(image_sum_sample_shape[1], tf.float32)
     gt_y_min = boxes[:, 1] / tf.cast(image_sum_sample_shape[0], tf.float32)
     gt_x_max = boxes[:, 2] / tf.cast(image_sum_sample_shape[1], tf.float32)
     gt_y_max = boxes[:, 3] / tf.cast(image_sum_sample_shape[0], tf.float32)
     bb = tf.stack([gt_y_min, gt_x_min, gt_y_max, gt_x_max], axis=1)
+
+    img_channel_swap = tf.reverse(image, axis=[-1])
     tf.summary.image(name=name,
-                     tensor=tf.image.draw_bounding_boxes(image, tf.expand_dims(bb, 0), name=None),
+                     tensor=tf.image.draw_bounding_boxes(color_swap(image), tf.expand_dims(bb, 0), name=None),
                      max_outputs=1)
 
 
 def visualize_input_image(image):
-    tf.summary.image(name="input_image", tensor=image, max_outputs=1)
+    tf.summary.image(name="input_image", tensor=color_swap(image), max_outputs=1)
 
 
 def visualize_final_predictions(boxes, image, masks):
     visualize_masks(masks, "pred_mask")
-    visualize_bb(image, boxes, "final_bb_pred")
+    visualize_bb(image , boxes, "final_bb_pred")

@@ -4,6 +4,12 @@ from __future__ import print_function
 
 import tensorflow as tf
 
+
+
+tf.app.flags.DEFINE_string(
+    'GPU', '5',
+    'The GPU on which to train the model')
+
 ##########################
 #                  restore
 ##########################
